@@ -1,0 +1,7 @@
+/shelf/
+/workspace.xml
+/target/
+/build/
+*.idea
+*.iml
+*.settings
