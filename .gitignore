@@ -1,7 +1,12 @@
 /shelf/
 /workspace.xml
+
+*.iml
+*.idea/
+readme.java
+### IntelliJ IDEA ###
+out/
 /target/
 /build/
-*.idea
-*.iml
+*/.idea
 *.settings
