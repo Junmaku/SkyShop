@@ -69,4 +69,10 @@ public class StorageService {
         return tempList;
     }
 
+    public Optional <Product> getProductById(UUID id) {
+        return Optional.ofNullable(productsStorage.get(id));
+
+
+    }
+
 }
