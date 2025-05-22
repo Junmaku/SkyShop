@@ -19,8 +19,6 @@ import java.util.UUID;
 @RestController
 public class ShopController {
     private BasketService basketService;
-
-//    @Autowired
     private SearchService searchService;
 
     public ShopController(SearchService searchService, BasketService basketService) {
@@ -29,12 +27,13 @@ public class ShopController {
     }
 
     @GetMapping("/articles")
-    public Collection<Article> getAllProducts() {
-        return StorageService.createArticles4Test();
-    };
+    public Collection<Article> getAllArticles() {
+        return basketService.getStorageService().getArticlesStorage();
+    }
+
     @GetMapping("/products")
-    public Collection<Product> getAllArticles() {
-        return StorageService.createProducts4Test();
+    public Collection<Product> getAllProducts() {
+        return basketService.getStorageService().getProductsStorage();
     }
 
     @GetMapping("/search")
@@ -42,9 +41,10 @@ public class ShopController {
         return searchService.search(pattern);
     }
 
-    @GetMapping("/basket/ {id}")
+    @GetMapping("/basket/{id}")
     public String addProduct(@PathVariable("id") UUID id) {
-        return "Продукт успешно добавлен";
+        basketService.addProduct(id);
+        return "Продукт " + basketService.getStorageService().getProductById(id).get().getName() + " добавлен";
     }
 
     @GetMapping("/basket")

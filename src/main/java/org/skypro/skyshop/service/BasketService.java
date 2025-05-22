@@ -1,14 +1,13 @@
 package org.skypro.skyshop.service;
 
+import org.skypro.skyshop.exceptions.ProductNotFoundException;
 import org.skypro.skyshop.model.basket.BasketItem;
 import org.skypro.skyshop.model.basket.ProductBasket;
 import org.skypro.skyshop.model.basket.UserBasket;
 import org.skypro.skyshop.model.product.Product;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,30 +24,29 @@ public class BasketService {
     public void addProduct(UUID id) {
         storageService.getProductById(id)
                 .ifPresentOrElse(product -> productBasket.addProduct(product.getId()),
-                        () -> { throw new IllegalArgumentException("Product with id " + id + " is not found"); });
+                        () -> {
+                            throw new IllegalArgumentException("Product with id " + id + " is not found");
+                        });
     }
 
     public UserBasket getUserBasket() {
-        ArrayList <BasketItem> tempList = new ArrayList<>();
-        int tempTotal;
-
-        tempList = (ArrayList<BasketItem>) productBasket.getBasket().entrySet()
+        List<BasketItem> tempList = productBasket.getBasket().entrySet()
                 .stream()
                 .map(entry -> {
                     UUID productId = entry.getKey();
-                    Integer quantity = entry.getValue();
-                    Optional<Product> prod = storageService.getProductById(productId);
-                    return new BasketItem(prod.orElse(null), quantity);
+                    Product prod = storageService.getProductById(productId)
+                            .orElseThrow(() -> new ProductNotFoundException(productId));
+                    return new BasketItem(prod, entry.getValue());
                 })
-                .toList();
+                .collect(Collectors.toList());
 
-        tempTotal = tempList.stream()
-                .map(BasketItem::getProduct)
-                .mapToInt(entry ->  entry.getPrice() * productBasket.getBasket().get(entry.getId()))
+        int tempTotal = tempList.stream()
+                .mapToInt(entry -> entry.getProduct().getPrice() * entry.getQuantity())
                 .sum();
         return new UserBasket(tempList, tempTotal);
+    }
 
-
-
+    public StorageService getStorageService() {
+        return storageService;
     }
 }

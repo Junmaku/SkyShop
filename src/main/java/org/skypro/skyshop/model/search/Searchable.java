@@ -1,5 +1,7 @@
 package org.skypro.skyshop.model.search;
 
+import org.springframework.stereotype.Component;
+
 import java.util.UUID;
 
 public interface Searchable extends Comparable<Searchable> {

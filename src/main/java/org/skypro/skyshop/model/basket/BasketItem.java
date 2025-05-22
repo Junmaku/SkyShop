@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
-//@Scope("prototype")
 public class BasketItem {
     private final Product product;
     private final int quantity;
 
-    public BasketItem(Product product, @Value("${basket.default-quantity:0}") int quantity) {
+    public BasketItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }

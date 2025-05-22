@@ -6,12 +6,15 @@ import org.skypro.skyshop.model.product.FixPriceProduct;
 import org.skypro.skyshop.model.product.Product;
 import org.skypro.skyshop.model.product.SimpleProduct;
 import org.skypro.skyshop.model.search.Searchable;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.*;
 
 
 @Service
+@ApplicationScope
 public class StorageService {
     private final Map<UUID, Product> productsStorage;
     private final Map<UUID, Article> articlesStorage;
@@ -20,30 +23,28 @@ public class StorageService {
     public StorageService(Map<UUID, Product> products, Map<UUID, Article> articles) {
         this.productsStorage = products;
         this.articlesStorage = articles;
-        createProducts4Test();
-        createArticles4Test();
+        init();
     }
 
-    public ArrayList<Product> getProductsStorage() {
+    public List<Product> getProductsStorage() {
         return new ArrayList<>(productsStorage.values());
     }
 
-
-    public ArrayList<Article> getArticlesStorage() {
+    public List<Article> getArticlesStorage() {
         return new ArrayList<>(articlesStorage.values());
     }
 
-    public static List<Product> createProducts4Test() {
-        ArrayList<Product> newBasket = new ArrayList<>();
-        Product potato = new FixPriceProduct("Potato", UUID.randomUUID());
-        Product salad = new DiscountedProduct("Salad", 45, 5, UUID.randomUUID());
-        Product carrot = new SimpleProduct("Carrot", 40, UUID.randomUUID());
+    public Optional<Product> getProductById(UUID id) {
+        return Optional.ofNullable(productsStorage.get(id));
+    }
 
-        newBasket.add(potato);
-        newBasket.add(salad);
-        newBasket.add(carrot);
-
-        return newBasket;
+    public Collection<Searchable> getAllSearchable() {
+        List<Searchable> tempList = new ArrayList<>();
+        productsStorage.values()
+                .stream()
+                .forEach(tempList::add);
+        tempList.addAll(articlesStorage.values());
+        return tempList;
     }
 
     public static List<Article> createArticles4Test() {
@@ -60,19 +61,21 @@ public class StorageService {
         return articles;
     }
 
-    public Collection<Searchable> getAllSearchable() {
-        List<Searchable> tempList = new ArrayList<>();
-        productsStorage.values()
-                .stream()
-                .forEach(tempList::add);
-        tempList.addAll(articlesStorage.values());
-        return tempList;
+    public static List<Product> createProducts4Test() {
+        ArrayList<Product> newBasket = new ArrayList<>();
+        Product potato = new FixPriceProduct("Potato", UUID.randomUUID());
+        Product salad = new DiscountedProduct("Salad", 45, 5, UUID.randomUUID());
+        Product carrot = new SimpleProduct("Carrot", 40, UUID.randomUUID());
+
+        newBasket.add(potato);
+        newBasket.add(salad);
+        newBasket.add(carrot);
+
+        return newBasket;
     }
 
-    public Optional <Product> getProductById(UUID id) {
-        return Optional.ofNullable(productsStorage.get(id));
-
-
+    public void init() {
+        createProducts4Test().forEach(element -> this.productsStorage.put(element.getId(), element));
+        createArticles4Test().forEach(element -> this.articlesStorage.put(element.getId(), element));
     }
-
 }
