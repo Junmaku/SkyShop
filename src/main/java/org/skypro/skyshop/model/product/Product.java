@@ -2,9 +2,6 @@ package org.skypro.skyshop.model.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.skypro.skyshop.model.search.Searchable;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -13,7 +10,6 @@ abstract public class Product implements Searchable {
     private final String name;
     private final UUID id;
 
-    @Bean
     public UUID getId() {
         return this.id;
     }
